@@ -14,6 +14,10 @@ using System.Reflection;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Security.RightsManagement;
+using Microsoft.WindowsAPICodePack.Shell;
+using System.Windows.Documents;
+using System.Collections.Generic;
+using System.Windows.Media.Imaging;
 
 namespace StartScreen
 {
@@ -54,8 +58,25 @@ namespace StartScreen
             imageBackground.Effect = new BlurEffect { Radius = 24, RenderingBias = RenderingBias.Performance };
             counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
             counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
-        }
+            var FOLDERID_AppsFolder = new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}");
+            ShellObject appsFolder = (ShellObject)KnownFolderHelper.FromKnownFolderId(FOLDERID_AppsFolder);
 
+            foreach (var app in (IKnownFolder)appsFolder)
+            {
+                // The friendly app name
+                string name = app.Name;
+                // The ParsingName property is the AppUserModelID
+                string appUserModelID = app.ParsingName; // or app.Properties.System.AppUserModel.ID
+                                                         // You can even get the Jumbo icon in one shot
+                BitmapSource icon = app.Thumbnail.SmallBitmapSource;
+                //appList.SortDescriptions.Add(new System.ComponentModel.SortDescription("NAME", System.ComponentModel.ListSortDirection.Ascending));
+                appList.Add(new AppsIcons { Icon = icon, Name = name + "[" + appUserModelID});
+                appListNameFriendly.Add(new AppsIcons { Icon = icon, Name = name });
+            }
+            
+        }
+        public List<AppsIcons> appList = new List<AppsIcons>();
+        public List<AppsIcons> appListNameFriendly = new List<AppsIcons>();
         private void launcherTick(object? sender, EventArgs e)
         {
             Process[] pname = Process.GetProcessesByName("ScreenLaunch");
@@ -63,11 +84,18 @@ namespace StartScreen
             {
                 this.Opacity = 0;
                 this.Show();
+                if (Utils.getWallpaperPath().Contains("Transcoded"))
+                {
+                    imageBackground.Stretch = Stretch.UniformToFill;
+                }
+                imageBackground.Source = Home.BitmapFromUri(new Uri(Utils.getWallpaperPath()));
+                Home.beginTilesInit();
                 counter.Start();
                 foreach (Process p in pname)
                 {
                     p.Kill();
                 }
+                startPressed = false;
             }
         }
 
@@ -82,6 +110,7 @@ namespace StartScreen
                 counter2.Stop();
                 //MainWindow.Instance.closeAnimDone = true;
                 MainWindow.Instance.Hide();
+                GC.Collect();
             }
         }
 
@@ -104,11 +133,12 @@ namespace StartScreen
             hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             hwndSource.AddHook(new HwndSourceHook(WndProc));
         }
-
+        bool startPressed = false;
         private void Grid_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if(e.Key == Key.LWin || e.Key == Key.RWin)
             {
+                startPressed = true;
                 Home.closeAppAnim();
             }
         }
@@ -119,6 +149,7 @@ namespace StartScreen
 
         private void mainWindow_Deactivated(object sender, EventArgs e)
         {
+            if (startPressed) return;
             Home.closeAppAnim();
         }
         public void HideWindow()

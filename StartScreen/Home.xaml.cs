@@ -28,10 +28,12 @@ namespace StartScreen
     {
         public List<Button> Tiles = new List<Button>();
         public static Home Instance;
+        public static Button desktopTile;
         public Home()
         {
             Instance = this;
             InitializeComponent();
+            desktopTile = DesktopTile;
             Tiles.Add(DesktopTile);
             username.Content = Environment.UserName;
             // Profile Picture
@@ -43,13 +45,13 @@ namespace StartScreen
             MainWindow.Instance.counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
             MainWindow.Instance.counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
         }
-        public void beginTilesInit()
+        public static void beginTilesInit()
         {
             // Desktop Background Image
             
             var bgImageBrush = new ImageBrush(BitmapFromUri(new Uri(Utils.getWallpaperPath())));
             bgImageBrush.Stretch = Stretch.UniformToFill;
-            DesktopTile.Background = bgImageBrush;
+            desktopTile.Background = bgImageBrush;
             //this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0, 0, 0));
             
         }
