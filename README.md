@@ -9,5 +9,5 @@ Made using WPF C# .NET
 ### ScreenLaunch
 The app that launches the StartScreen app<br>
 this is also used to check if the User has clicked the start button or not<br>
-Made Using WinForms C# .NET
+Made using WinForms C# .NET
 ## Any help with the code/assets is appreciated
