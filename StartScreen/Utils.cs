@@ -18,6 +18,7 @@ namespace StartScreen
     {
         public static String getWallpaperPath()
         {
+            Logger.info("[Utils] Using Fallback Wallpaper Method!");
             Logger.info("[Utils] GetWallpaperPath() Called");
             var wallpaperFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Microsoft\\Windows\\Themes\\CachedFiles";
             var transcodedWallpaper = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Microsoft\\Windows\\Themes";

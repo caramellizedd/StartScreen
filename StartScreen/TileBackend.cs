@@ -31,7 +31,7 @@ namespace StartScreen
         {
             Logger.info("Initializing Default Tiles");
             data.Clear();
-            data.Add(new tileData { Size = tileSize.wide, name = "startScreen[specialTiles", programPath = "startScreen[hidefunc()];", tilePosX = 0, tilePosY = 0 });
+            data.Add(new tileData { Size = tileSize.wide, name = "startScreen[specialTiles(desktop)];", programPath = "startScreen[hidefunc()];", tilePosX = 0, tilePosY = 0 });
         }
         // Tile Data JSON Structure
         public class tileData

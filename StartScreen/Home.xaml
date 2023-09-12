@@ -49,13 +49,13 @@
             </Button.ContextMenu>
         </Button>
         <Button x:Name="userButton" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,54,134,0" Click="userButton_Click">
-            <Grid>
-                <Ellipse x:Name="profilePicture" HorizontalAlignment="Right" Height="37" Margin="0,0,0,0" VerticalAlignment="Top" Width="37">
+            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <Ellipse x:Name="profilePicture" HorizontalAlignment="Right" Height="37" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="37">
                     <Ellipse.Fill>
                         <ImageBrush/>
                     </Ellipse.Fill>
                 </Ellipse>
-                <Label x:Name="username" Content="username" HorizontalAlignment="Right" Margin="0,0,47,0" VerticalAlignment="Top" FontSize="24" Foreground="White"/>
+                <Label x:Name="username" Content="username" HorizontalAlignment="Right" Margin="0,0,47,0" VerticalAlignment="Stretch" FontSize="24" Foreground="White" FontFamily="Segoe UI"/>
             </Grid>
         </Button>
         <Button Content="&#xE74B;" HorizontalAlignment="Left" Margin="74,0,0,74" VerticalAlignment="Bottom" Height="48" Width="65" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="AllApps_Click"/>

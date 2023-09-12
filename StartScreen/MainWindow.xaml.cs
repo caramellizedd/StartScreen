@@ -34,7 +34,7 @@ namespace StartScreen
         public DispatcherTimer counter2 = new DispatcherTimer();
         DispatcherTimer counter = new DispatcherTimer();
         bool initialized = false;
-        bool userBackgroundEnabled = false;
+        bool userBackgroundEnabled = true;
         public AllApps allApps;
         public MainWindow()
         {
@@ -92,7 +92,7 @@ namespace StartScreen
                     }
                     
                 }).Start();
-                imageBackground.Opacity = 1;
+                imageBackground.Opacity = 0.5;
                 Logger.info("Background Opacity has been set to 1");
                 //imageBackground.Effect = new BlurEffect { Radius = 24, RenderingBias = RenderingBias.Performance };
                 Logger.info("Background Blur effect has been added");

@@ -66,12 +66,13 @@ namespace StartScreen
             //this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0, 0, 0));
             foreach(TileBackend.tileData data in tile.data) 
             {
+                Logger.info("Adding " + data.name + " to tile list");
                 Tile tile;
-                if (data.name == "Desktop")
+                if (data.name == "startScreen[specialTiles(desktop)];")
                 {
                     tile = new Tile
                     {
-                        Content = data.name,
+                        Content = "Desktop",
                         HorizontalContentAlignment = HorizontalAlignment.Left,
                         VerticalContentAlignment = VerticalAlignment.Bottom,
                         Background = bgImageBrush
