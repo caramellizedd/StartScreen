@@ -5,34 +5,20 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 using System.Windows.Media.Imaging;
+using static StartScreen.pinvoke;
+using System.Windows.Media;
+using System.Windows;
+using System.Reflection.Metadata;
 
 namespace StartScreen
 {
     public class Utils
     {
-        public static (Byte r, Byte g, Byte b, Byte a) GetAccentColor()
-        {
-            const String DWM_KEY = @"Software\Microsoft\Windows\DWM";
-            using (RegistryKey dwmKey = Registry.CurrentUser.OpenSubKey(DWM_KEY, RegistryKeyPermissionCheck.ReadSubTree))
-            {
-                const String KEY_EX_MSG = "The \"HKCU\\" + DWM_KEY + "\" registry key does not exist.";
-                if (dwmKey is null) throw new InvalidOperationException(KEY_EX_MSG);
-
-                Object? accentColorObj = dwmKey.GetValue("ColorizationColor");
-                if (accentColorObj is Int32 accentColorDword)
-                {
-                    return ParseDWordColor(accentColorDword);
-                }
-                else
-                {
-                    const String VALUE_EX_MSG = "The \"HKCU\\" + DWM_KEY + "\\AccentColor\" registry key value could not be parsed as an ABGR color.";
-                    throw new InvalidOperationException(VALUE_EX_MSG);
-                }
-            }
-        }
         public static String getWallpaperPath()
         {
+            Logger.info("[Utils] GetWallpaperPath() Called");
             var wallpaperFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Microsoft\\Windows\\Themes\\CachedFiles";
             var transcodedWallpaper = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Microsoft\\Windows\\Themes";
             if (Directory.Exists(wallpaperFolder))
@@ -51,21 +37,9 @@ namespace StartScreen
             }
             return "";
         }
-
-        private static (Byte r, Byte g, Byte b, Byte a) ParseDWordColor(Int32 color)
-        {
-            Byte
-                a = (byte)((color >> 24) & 0xFF),
-                b = (byte)((color >> 16) & 0xFF),
-                g = (byte)((color >> 8) & 0xFF),
-                r = (byte)((color >> 0) & 0xFF);
-
-            return (r, g, b, a);
-        }
-
         public static BitmapImage GetUserimage()
         {
-
+            Logger.info("[Utils] GetUserImage() Called");
             if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Temp\" + Environment.UserName + ".bmp"))
             {
                 return new BitmapImage(new Uri(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Temp\" + Environment.UserName + ".bmp"));
@@ -75,6 +49,46 @@ namespace StartScreen
                 return null;
             }
         }
+        public static Image CaptureScreen()
+        {
+            Logger.info("[P/Invoke] CaptureScreen() Called");
+            return CaptureWindow(User32.GetDesktopWindow());
+        }
 
+        public static Image CaptureWindow(IntPtr handle)
+        {
+            Logger.info("[P/Invoke] CaptureWindow() Called");
+            IntPtr hdcSrc = User32.GetWindowDC(handle);
+
+            RECT windowRect = new RECT();
+            User32.GetWindowRect(handle, ref windowRect);
+
+            int width = windowRect.right - windowRect.left;
+            int height = windowRect.bottom - windowRect.top;
+
+            IntPtr hdcDest = Gdi32.CreateCompatibleDC(hdcSrc);
+            IntPtr hBitmap = Gdi32.CreateCompatibleBitmap(hdcSrc, width, height);
+
+            IntPtr hOld = Gdi32.SelectObject(hdcDest, hBitmap);
+            Gdi32.BitBlt(hdcDest, 0, 0, width, height, hdcSrc, 0, 0, pinvoke.SRCCOPY);
+            Gdi32.SelectObject(hdcDest, hOld);
+            Gdi32.DeleteDC(hdcDest);
+            User32.ReleaseDC(handle, hdcSrc);
+
+            Image image = Bitmap.FromHbitmap(hBitmap);
+            Gdi32.DeleteObject(hBitmap);
+
+            return image;
+        }
+        public static Image DrawToImage(IntPtr window)
+        {
+            Logger.info("[P/Invoke] DrawToImage() Called");
+            return Utils.CaptureWindow(window);
+        }
+        public static Image getDesktopWallpaper()
+        {
+            Logger.info("[P/Invoke] GetDesktopWallpaper() Called");
+            return DrawToImage(User32.FindWindow("Progman",null));
+        }
     }
 }

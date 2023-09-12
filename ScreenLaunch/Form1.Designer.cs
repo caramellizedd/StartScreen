@@ -30,25 +30,39 @@
         {
             components = new System.ComponentModel.Container();
             timer1 = new System.Windows.Forms.Timer(components);
+            label1 = new Label();
             SuspendLayout();
             // 
             // timer1
             // 
             timer1.Tick += timer1_Tick;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 21.75F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Location = new Point(12, 9);
+            label1.Name = "label1";
+            label1.Size = new Size(318, 40);
+            label1.TabIndex = 0;
+            label1.Text = "Waiting for Start Screen";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(407, 0);
+            ClientSize = new Size(336, 65);
+            Controls.Add(label1);
             Name = "Form1";
             Text = "StartScreenWait";
             Load += Form1_Load;
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private System.Windows.Forms.Timer timer1;
+        private Label label1;
     }
 }

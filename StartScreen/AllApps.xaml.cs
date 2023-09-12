@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,20 +32,34 @@ namespace StartScreen
         public AllApps()
         {
             InitializeComponent();
+            listBox.Loaded += ListBox_Loaded;
+            listBox.Unloaded += ListBox_Unloaded;
             listBox.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
             listBox.ItemsSource = MainWindow.Instance.appListNameFriendly;
             foreach (AppsIcons obj in MainWindow.Instance.appList)
             {
+                Logger.info("Adding " + obj.Name + " to tag list");
                 appTag.Add(obj.Name);
             }
+            Logger.info("[AllApps] Menu Executed!");
+        }
+
+        private void ListBox_Unloaded(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void ListBox_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
+            
             MainWindow.Instance.content.GoBack();
-            MainWindow.Instance.imageBackground.Opacity = 1;
-            MainWindow.Instance.imageBackground.Effect = new BlurEffect { Radius = 24, RenderingBias = RenderingBias.Performance };
+            //MainWindow.Instance.imageBackground.Opacity = 1;
+            //MainWindow.Instance.imageBackground.Effect = new BlurEffect { Radius = 24, RenderingBias = RenderingBias.Performance };
         }
 
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -53,8 +68,9 @@ namespace StartScreen
             {
                 String[] temp = obj.Split('[');
                 AppsIcons temp2 = listBox.SelectedItem as AppsIcons;
-                if (obj.Contains(temp2.Name))
+                if (temp[0].Equals(temp2.Name))
                 {
+                    Logger.info("Starting selected app");
                     Process.Start("explorer.exe", @" shell:appsFolder\" + temp[1]);
                     Home.closeAppAnim();
                 }
