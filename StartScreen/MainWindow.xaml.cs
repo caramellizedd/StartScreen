@@ -36,6 +36,7 @@ namespace StartScreen
         bool initialized = false;
         bool userBackgroundEnabled = true;
         public AllApps allApps;
+        public Home homeScreen;
         public MainWindow()
         {
             alreadyShowing = true;
@@ -63,7 +64,8 @@ namespace StartScreen
                 Loaded += MainWindow_Loaded;
                 this.Background = SystemParameters.WindowGlassBrush;
                 Logger.info("Background has been set to Accent Color");
-                content.Navigate(new Home(), new EntranceNavigationTransitionInfo());
+                homeScreen = new Home();
+                content.Navigate(homeScreen, new EntranceNavigationTransitionInfo());
                 new Thread(() =>
                 {
                     if(userBackgroundEnabled)
@@ -147,6 +149,36 @@ namespace StartScreen
                 {
                     p.Kill();
                 }
+                new Thread(() =>
+                {
+                    if (userBackgroundEnabled)
+                    {
+                        Logger.info("Getting user background");
+                        // Background Logic
+                        MemoryStream ms = new MemoryStream();
+                        Logger.info("ms Instance: " + ms.ToString());
+                        // Save to a memory stream...
+                        Utils.getDesktopWallpaper().Save(ms, ImageFormat.Bmp);
+                        Logger.info("Desktop Wallpaper saved as BMP in Memory");
+                        ms.Seek(0, SeekOrigin.Begin);
+                        Logger.info("Resetted Memory Stream Seek Distance to 0");
+                        BitmapImage bi = new BitmapImage();
+                        bi.BeginInit();
+                        Logger.info("BitmapImage has been initialized");
+                        bi.StreamSource = ms;
+                        bi.EndInit();
+                        bi.Freeze();
+                        Logger.info("BitmapImage has been frozen");
+                        imageBackground.Dispatcher.Invoke(() =>
+                        {
+                            Logger.info("Setting imageBackground as User Background");
+                            imageBackground.Source = bi;
+                        });
+                        
+                    }
+
+                }).Start();
+                homeScreen.beginTilesInit();
                 startPressed = false;
                 alreadyShowing = true;
             }

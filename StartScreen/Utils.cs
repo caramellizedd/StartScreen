@@ -30,13 +30,13 @@ namespace StartScreen
                     {
                         return file;
                     }
+                    else
+                    {
+                        return transcodedWallpaper + "\\TranscodedWallpaper";
+                    }
                 }
             }
-            else
-            {
-                return transcodedWallpaper + "\\TranscodedWallpaper";
-            }
-            return "";
+            return transcodedWallpaper + "\\TranscodedWallpaper";
         }
         public static BitmapImage GetUserimage()
         {

@@ -64,6 +64,7 @@ namespace StartScreen
             bgImageBrush.Stretch = Stretch.UniformToFill;
             //desktopTile.Background = bgImageBrush;
             //this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0, 0, 0));
+            TileList.Items.Clear();
             foreach(TileBackend.tileData data in tile.data) 
             {
                 Logger.info("Adding " + data.name + " to tile list");
@@ -82,7 +83,41 @@ namespace StartScreen
                 }
                 else
                 {
+                    tile = new Tile
+                    {
+                        Content = data.name,
+                        HorizontalContentAlignment = HorizontalAlignment.Left,
+                        VerticalContentAlignment = VerticalAlignment.Bottom,
+                        Background = bgImageBrush
+                    };
+                    TileList.Items.Add(tile);
+                    tile.Click += Tile_Click;
+                }
+            }
+        }
 
+        private void Tile_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(TileBackend.tileData data in tile.data)
+            {
+                if(sender is Tile)
+                {
+                    if((sender as Tile).Content == data.name)
+                    {
+                        Logger.info("Executing " + data.programPath);
+                        try
+                        {
+                            Process process = new Process();
+                            process.StartInfo.UseShellExecute = true;
+                            process.StartInfo.FileName = data.programPath;
+                            process.Start();
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.info("An error occured while trying to run " + data.programPath);
+                            Logger.info(ex.ToString());
+                        }
+                    }
                 }
             }
         }
