@@ -16,4 +16,7 @@ Made using WinForms C# .NET
   Probably due to so much items in that Menu
 ## How-to
 To use this as a start menu, use open-shell custom commands
+## To-Do
+- Use p/invoke or native code to replace the actual start menu instead of using Open-Shell
+- Do some optimization for the ram usage issue
 ## Any help with the code/assets is appreciated
