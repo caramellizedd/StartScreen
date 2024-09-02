@@ -36,7 +36,7 @@ namespace StartScreen
         public DispatcherTimer counter2 = new DispatcherTimer();
         DispatcherTimer counter = new DispatcherTimer();
         bool initialized = false;
-        bool userBackgroundEnabled = false;
+        bool userBackgroundEnabled = true;
         public AllApps allApps;
         public Home homeScreen;
         public MainWindow()
@@ -48,6 +48,8 @@ namespace StartScreen
             Logger.info("Instance has been set to \"This\"!");
             this.Opacity = 0;
             Logger.info("Opacity has been set to 0");
+            // Set window to topmost
+            // Prevents stuff from covering the startscreen.
             Topmost = true;
             Logger.info("Window has been set to Top-Most");
             this.ShowInTaskbar = false;
@@ -96,7 +98,7 @@ namespace StartScreen
                     }
                     else
                     {
-                        Logger.info("Getting user background");
+                        Logger.info("Capturing the desktop as background...");
                         // Background Logic
                         MemoryStream ms = new MemoryStream();
                         Logger.info("ms Instance: " + ms.ToString());
@@ -125,7 +127,7 @@ namespace StartScreen
                 
                 imageBackground.Opacity = 0.7;
                 Logger.info("Background Opacity has been set to 1");
-                imageBackground.Effect = new BlurEffect { Radius = 10, RenderingBias = RenderingBias.Performance };
+                imageBackground.Effect = new BlurEffect { Radius = 30, RenderingBias = RenderingBias.Performance };
                 Logger.info("Background Blur effect has been added");
                 counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
                 counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
