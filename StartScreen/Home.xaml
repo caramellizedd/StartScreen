@@ -38,6 +38,11 @@
         </Style>
     </Page.Resources>
     <Grid x:Name="contentGrid">
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Add a new Tile" Click="createTile_Click"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
         <Label Content="Start" HorizontalAlignment="Left" Margin="74,74,0,0" VerticalAlignment="Top" FontSize="64" Foreground="White"/>
         <Button x:Name="powerAction" Width="50" Height="50" Content="&#xE7E8;" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,54,74,0" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="powerAction_Click">
             <Button.ContextMenu>
@@ -59,7 +64,7 @@
             </Grid>
         </Button>
         <Button Content="&#xE74B;" HorizontalAlignment="Left" Margin="74,0,0,74" VerticalAlignment="Bottom" Height="48" Width="65" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="AllApps_Click"/>
-        <ListBox x:Name="TileList" Background="Transparent" Margin="74,164,0,144">
+        <ListBox x:Name="TileList" Background="Transparent" Margin="74,164,0,144" Focusable="False" SelectionChanged="TileList_SelectionChanged">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Orientation="Horizontal"/>

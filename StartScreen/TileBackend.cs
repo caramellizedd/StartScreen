@@ -6,12 +6,17 @@ using System.Threading.Tasks;
 
 namespace StartScreen
 {
-    class TileBackend
+    public class TileBackend
     {
         public List<tileData> data = new List<tileData>();
+        public List<tileData> userData = new List<tileData>();
         public void saveTile()
         {
 
+        }
+        public void addTile(string tileName, string programPath, tileSize size)
+        {
+            userData.Add(new tileData { Size = size, name = tileName, programPath = programPath, tilePosX = 0, tilePosY = 25565 });
         }
         public void loadAllTiles()
         {
@@ -31,8 +36,13 @@ namespace StartScreen
         {
             Logger.info("Initializing Default Tiles");
             data.Clear();
-            data.Add(new tileData { Size = tileSize.wide, name = "startScreen[specialTiles(desktop)];", programPath = "startScreen[hidefunc()];", tilePosX = 0, tilePosY = 0 });
-            data.Add(new tileData { Size = tileSize.wide, name = "Internet Explorer", programPath = "iexplore", tilePosX = 0, tilePosY = 1 });
+            data.Add(new tileData { Size = tileSize.Wide, name = "startScreen[specialTiles(desktop)];", programPath = "startScreen[hidefunc()];", tilePosX = 0, tilePosY = 0 });
+            data.Add(new tileData { Size = tileSize.Wide, name = "Internet Explorer", programPath = "iexplore", tilePosX = 0, tilePosY = 1 });
+            data.Add(new tileData { Size = tileSize.Wide, name = "Google", programPath = "http://google.com", tilePosX = 0, tilePosY = 1 });
+            foreach(tileData tile in userData)
+            {
+                data.Add(tile);
+            }
         }
         // Tile Data JSON Structure
         public class tileData
@@ -45,10 +55,10 @@ namespace StartScreen
         }
         public enum tileSize
         {
-            rsmall, // 0.5x0.5
-            small, // 1x1
-            wide, // 1x2
-            large // 2x2
+            Small, // 0.5x0.5 rsmall
+            Medium, // 1x1 small
+            Wide, // 1x2 wide
+            Large // 2x2 large
         }
     }
 }

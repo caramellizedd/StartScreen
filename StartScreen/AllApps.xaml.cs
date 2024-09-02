@@ -67,7 +67,10 @@ namespace StartScreen
             foreach (String obj in appTag)
             {
                 String[] temp = obj.Split('[');
-                AppsIcons temp2 = listBox.SelectedItem as AppsIcons;
+                AppsIcons? temp2 = listBox.SelectedItem as AppsIcons;
+                //Button temp3 = AppsIcons
+                //Logger.info(temp2.Name);
+                if (temp2 == null) return;
                 if (temp[0].Equals(temp2.Name))
                 {
                     Logger.info("Starting selected app");
@@ -75,6 +78,8 @@ namespace StartScreen
                     Home.closeAppAnim();
                 }
             }
+            listBox.UnselectAll();
+            MainWindow.Instance.content.GoBack();
         }
 
         private void listBox_Selected(object sender, RoutedEventArgs e)

@@ -11,6 +11,8 @@ using static StartScreen.pinvoke;
 using System.Windows.Media;
 using System.Windows;
 using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace StartScreen
 {
@@ -90,6 +92,16 @@ namespace StartScreen
         {
             Logger.info("[P/Invoke] GetDesktopWallpaper() Called");
             return DrawToImage(User32.FindWindow("Progman",null));
+        }
+        public static Image getDesktop()
+        {
+            Logger.info("[P/Invoke] GetDesktop() Called");
+            return DrawToImage(User32.GetDesktopWindow());
+        }
+
+        public static void EnableBlur(IntPtr HWnd, bool hasFrame = true)
+        {
+            // stub
         }
     }
 }

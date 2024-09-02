@@ -20,6 +20,8 @@ using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Windows.Controls;
+using System.Drawing;
 
 namespace StartScreen
 {
@@ -34,7 +36,7 @@ namespace StartScreen
         public DispatcherTimer counter2 = new DispatcherTimer();
         DispatcherTimer counter = new DispatcherTimer();
         bool initialized = false;
-        bool userBackgroundEnabled = true;
+        bool userBackgroundEnabled = false;
         public AllApps allApps;
         public Home homeScreen;
         public MainWindow()
@@ -92,11 +94,38 @@ namespace StartScreen
                             imageBackground.Source = bi;
                         });
                     }
+                    else
+                    {
+                        Logger.info("Getting user background");
+                        // Background Logic
+                        MemoryStream ms = new MemoryStream();
+                        Logger.info("ms Instance: " + ms.ToString());
+                        // Save to a memory stream...
+                        Utils.getDesktop().Save(ms, ImageFormat.Bmp);
+                        Logger.info("Desktop Wallpaper saved as BMP in Memory");
+                        ms.Seek(0, SeekOrigin.Begin);
+                        Logger.info("Resetted Memory Stream Seek Distance to 0");
+                        BitmapImage bi = new BitmapImage();
+                        bi.BeginInit();
+                        Logger.info("BitmapImage has been initialized");
+                        bi.StreamSource = ms;
+                        bi.EndInit();
+                        bi.Freeze();
+                        Logger.info("BitmapImage has been frozen");
+                        imageBackground.Dispatcher.Invoke(() =>
+                        {
+                            Logger.info("Setting imageBackground as User Background");
+                            imageBackground.Source = bi;
+                            imageBackground.Stretch = Stretch.None;
+                            this.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0,0,0));
+                        });
+                    }
                     
                 }).Start();
-                imageBackground.Opacity = 0.5;
+                
+                imageBackground.Opacity = 0.7;
                 Logger.info("Background Opacity has been set to 1");
-                //imageBackground.Effect = new BlurEffect { Radius = 24, RenderingBias = RenderingBias.Performance };
+                imageBackground.Effect = new BlurEffect { Radius = 10, RenderingBias = RenderingBias.Performance };
                 Logger.info("Background Blur effect has been added");
                 counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
                 counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
@@ -120,6 +149,7 @@ namespace StartScreen
                 }
                 initialized = true;
                 allApps = new AllApps();
+                
             }
         }
         public List<AppsIcons> appList = new List<AppsIcons>();
@@ -141,8 +171,6 @@ namespace StartScreen
                 }
                 this.Opacity = 0;
                 this.Show();
-                if(content.CanGoBack)
-                    content.GoBack();
                 //Home.beginTilesInit();
                 counter.Start();
                 foreach (Process p in pname)
@@ -174,7 +202,32 @@ namespace StartScreen
                             Logger.info("Setting imageBackground as User Background");
                             imageBackground.Source = bi;
                         });
-                        
+                    }
+                    else
+                    {
+                        Logger.info("Getting user background");
+                        // Background Logic
+                        MemoryStream ms = new MemoryStream();
+                        Logger.info("ms Instance: " + ms.ToString());
+                        // Save to a memory stream...
+                        Utils.getDesktop().Save(ms, ImageFormat.Bmp);
+                        Logger.info("Desktop Wallpaper saved as BMP in Memory");
+                        ms.Seek(0, SeekOrigin.Begin);
+                        Logger.info("Resetted Memory Stream Seek Distance to 0");
+                        BitmapImage bi = new BitmapImage();
+                        bi.BeginInit();
+                        Logger.info("BitmapImage has been initialized");
+                        bi.StreamSource = ms;
+                        bi.EndInit();
+                        bi.Freeze();
+                        Logger.info("BitmapImage has been frozen");
+                        imageBackground.Dispatcher.Invoke(() =>
+                        {
+                            Logger.info("Setting imageBackground as User Background");
+                            imageBackground.Source = bi;
+                            imageBackground.Stretch = Stretch.None;
+                            this.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 0, 0));
+                        });
                     }
 
                 }).Start();
@@ -215,6 +268,10 @@ namespace StartScreen
         }
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            if (!userBackgroundEnabled)
+            {
+                Utils.EnableBlur(new WindowInteropHelper(this).Handle);
+            }
             hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             Logger.info("Adding HWND Hook for receiving messages");
             hwndSource.AddHook(new HwndSourceHook(WndProc));

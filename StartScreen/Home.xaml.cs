@@ -23,18 +23,19 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
+using ModernWpf.Controls;
 
 namespace StartScreen
 {
     /// <summary>
     /// Interaction logic for Home.xaml
     /// </summary>
-    public partial class Home : Page
+    public partial class Home : System.Windows.Controls.Page
     {
         //public List<Button> Tiles = new List<Button>();
         public static Home Instance;
         //public List<tileData> tiles = new List<tileData>();
-        TileBackend tile = new TileBackend();
+        public TileBackend tile = new TileBackend();
         //public static Button desktopTile;
         
         public Home()
@@ -88,7 +89,7 @@ namespace StartScreen
                         Content = data.name,
                         HorizontalContentAlignment = HorizontalAlignment.Left,
                         VerticalContentAlignment = VerticalAlignment.Bottom,
-                        Background = bgImageBrush
+                        Background = SystemParameters.WindowGlassBrush
                     };
                     TileList.Items.Add(tile);
                     tile.Click += Tile_Click;
@@ -218,6 +219,17 @@ namespace StartScreen
             proc.StartInfo.UseShellExecute = true;
             proc.StartInfo.Verb = "runas";
             proc.Start();
+        }
+
+        private void createTile_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new NewTileDialog();
+            var result = dialog.ShowAsync();
+        }
+
+        private void TileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TileList.UnselectAll();
         }
     }
     

@@ -13,7 +13,7 @@
         Closing="mainWindow_Closing"
         Deactivated="mainWindow_Deactivated"
         Keyboard.KeyDown="Grid_KeyDown"
-        Background="#FF000000"
+        Background="#55000000"
         Title="MainWindow" Height="768" Width="1280" x:Name="mainWindow">
     <Grid>
         <Image x:Name="imageBackground"/>
