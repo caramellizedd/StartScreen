@@ -6,18 +6,16 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:local="clr-namespace:StartScreen"
         mc:Ignorable="d"
-        AllowsTransparency="True"
+        AllowsTransparency="False"
         WindowStyle="None"
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
         Closing="mainWindow_Closing"
         Deactivated="mainWindow_Deactivated"
         Keyboard.KeyDown="Grid_KeyDown"
-        Background="#55000000"
         Title="MainWindow" Height="768" Width="1280" x:Name="mainWindow">
     <Grid>
-        <Image x:Name="imageBackground"/>
-        <ui:Frame x:Name="content"/>
+        <ui:Frame x:Name="content" Background="#77000000"/>
         <Menu/>
 
     </Grid>

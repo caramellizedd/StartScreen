@@ -10,15 +10,15 @@
     <Grid>
         <Label Content="All Apps" HorizontalAlignment="Left" Margin="74,144,0,0" VerticalAlignment="Top" FontSize="32" Foreground="White"/>
         <Button Content="" HorizontalAlignment="Left" Margin="74,64,0,0" VerticalAlignment="Top" Height="48" Width="65" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="Button_Click"/>
-        <ListBox x:Name="listBox" Background="#11000000" PreviewKeyDown="listBox_PreviewKeyDown" PreviewKeyUp="listBox_PreviewKeyUp" Margin="74,213,74,81" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionChanged="listBox_SelectionChanged">
+        <ListBox x:Name="listBox" Visibility="Visible" Background="#11000000" PreviewKeyDown="listBox_PreviewKeyDown" PreviewKeyUp="listBox_PreviewKeyUp" Margin="74,213,74,81" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionChanged="listBox_SelectionChanged" VirtualizingStackPanel.VirtualizationMode="Recycling">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" ItemWidth="216" ItemHeight="54"/>
+                    <WrapPanel Orientation="Horizontal" ItemWidth="216" ItemHeight="54" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel>
+                    <StackPanel ScrollViewer.CanContentScroll="False">
                         <Image Source="{Binding Path=Icon}" Width="32" Height="32" Stretch="UniformToFill" HorizontalAlignment="Left"/>
                         <Label Content="{Binding Path=Name}" Margin="42 -26 0 0"/>
                     </StackPanel>

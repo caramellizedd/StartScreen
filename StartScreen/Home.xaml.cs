@@ -51,8 +51,6 @@ namespace StartScreen
             profilePicture.Fill = image;
             //DesktopTile.Background = SystemParameters.WindowGlassBrush;
             beginTilesInit();
-            MainWindow.Instance.counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
-            MainWindow.Instance.counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
         }
         public void beginTilesInit()
         {

@@ -22,6 +22,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Controls;
 using System.Drawing;
+using static StartScreen.pinvoke;
+using System.Windows.Forms;
 
 namespace StartScreen
 {
@@ -31,22 +33,31 @@ namespace StartScreen
     public partial class MainWindow : Window
     {
         public static MainWindow Instance;
+        
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
+
         public DispatcherTimer counter2 = new DispatcherTimer();
         DispatcherTimer counter = new DispatcherTimer();
+        
         bool initialized = false;
+        // Use the user wallpaper as the background if true
+        // If false it blurs the content behind the start screen (STATIC)
         bool userBackgroundEnabled = true;
+        
         public AllApps allApps;
         public Home homeScreen;
+        
         public MainWindow()
         {
+            this.Hide();
             alreadyShowing = true;
             InitializeComponent();
             Logger.info("Object initialized!");
             Instance = this;
             Logger.info("Instance has been set to \"This\"!");
-            this.Opacity = 0;
+            //this.Opacity = 0;
+            
             Logger.info("Opacity has been set to 0");
             // Set window to topmost
             // Prevents stuff from covering the startscreen.
@@ -56,9 +67,6 @@ namespace StartScreen
             Logger.info("Successfully hidden from taskbar");
             if (!initialized)
             {
-                counter.Tick += new EventHandler(windowAnim);
-                counter.Interval = new TimeSpan(0, 0, 0, 0, 2);
-                counter.Start();
                 Logger.info("windowAnim timer has initialized and started");
                 DispatcherTimer checkLauncher = new DispatcherTimer();
                 checkLauncher.Tick += new EventHandler(launcherTick);
@@ -90,10 +98,11 @@ namespace StartScreen
                         bi.EndInit();
                         bi.Freeze();
                         Logger.info("BitmapImage has been frozen");
-                        imageBackground.Dispatcher.Invoke(() =>
+                        this.Dispatcher.Invoke(() =>
                         {
                             Logger.info("Setting imageBackground as User Background");
-                            imageBackground.Source = bi;
+                            //imageBackground.Source = bi;
+                            this.Background = new ImageBrush(bi);
                         });
                     }
                     else
@@ -114,23 +123,21 @@ namespace StartScreen
                         bi.EndInit();
                         bi.Freeze();
                         Logger.info("BitmapImage has been frozen");
-                        imageBackground.Dispatcher.Invoke(() =>
+                        this.Dispatcher.Invoke(() =>
                         {
                             Logger.info("Setting imageBackground as User Background");
-                            imageBackground.Source = bi;
-                            imageBackground.Stretch = Stretch.None;
+                            //imageBackground.Source = bi;
+                            //imageBackground.Stretch = Stretch.None;
                             this.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0,0,0));
                         });
                     }
                     
                 }).Start();
                 
-                imageBackground.Opacity = 0.7;
+                //imageBackground.Opacity = 1;
                 Logger.info("Background Opacity has been set to 1");
-                imageBackground.Effect = new BlurEffect { Radius = 30, RenderingBias = RenderingBias.Performance };
+                //imageBackground.Effect = new BlurEffect { Radius = 30, RenderingBias = RenderingBias.Performance };
                 Logger.info("Background Blur effect has been added");
-                counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
-                counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
                 var FOLDERID_AppsFolder = new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}");
                 ShellObject appsFolder = (ShellObject)KnownFolderHelper.FromKnownFolderId(FOLDERID_AppsFolder);
                 Logger.info("Listing All Apps");
@@ -153,6 +160,7 @@ namespace StartScreen
                 allApps = new AllApps();
                 
             }
+            this.Show();
         }
         public List<AppsIcons> appList = new List<AppsIcons>();
         public List<AppsIcons> appListNameFriendly = new List<AppsIcons>();
@@ -171,7 +179,7 @@ namespace StartScreen
                     }
                     return;
                 }
-                this.Opacity = 0;
+                //this.Opacity = 0;
                 this.Show();
                 //Home.beginTilesInit();
                 counter.Start();
@@ -199,10 +207,10 @@ namespace StartScreen
                         bi.EndInit();
                         bi.Freeze();
                         Logger.info("BitmapImage has been frozen");
-                        imageBackground.Dispatcher.Invoke(() =>
+                        this.Dispatcher.Invoke(() =>
                         {
                             Logger.info("Setting imageBackground as User Background");
-                            imageBackground.Source = bi;
+                            //imageBackground.Source = bi;
                         });
                     }
                     else
@@ -223,11 +231,11 @@ namespace StartScreen
                         bi.EndInit();
                         bi.Freeze();
                         Logger.info("BitmapImage has been frozen");
-                        imageBackground.Dispatcher.Invoke(() =>
+                        this.Dispatcher.Invoke(() =>
                         {
                             Logger.info("Setting imageBackground as User Background");
-                            imageBackground.Source = bi;
-                            imageBackground.Stretch = Stretch.None;
+                            //imageBackground.Source = bi;
+                            //imageBackground.Stretch = Stretch.None;
                             this.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 0, 0));
                         });
                     }
@@ -237,29 +245,6 @@ namespace StartScreen
                 startPressed = false;
                 alreadyShowing = true;
             }
-        }
-
-        public void windowAnim2(object? sender, EventArgs e)
-        {
-            if (mainWindow.Opacity > 0.1)
-            {
-                mainWindow.Opacity -= 0.1;
-            }
-            else
-            {
-                counter2.Stop();
-                //MainWindow.Instance.closeAnimDone = true;
-                MainWindow.Instance.Hide();
-                GC.Collect();
-            }
-        }
-
-        private void windowAnim(object? sender, EventArgs e)
-        {
-            if (mainWindow.Opacity < 1)
-                mainWindow.Opacity += 0.1;
-            else
-                counter.Stop();
         }
 
         public bool hidden = false;
@@ -275,9 +260,60 @@ namespace StartScreen
                 Utils.EnableBlur(new WindowInteropHelper(this).Handle);
             }
             hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
-            Logger.info("Adding HWND Hook for receiving messages");
-            hwndSource.AddHook(new HwndSourceHook(WndProc));
+            Logger.info("Hooking the start button and other start menu hotkeys...");
+            //hwndSource.AddHook(new HwndSourceHook(WndProc));
+            hook.HookedKeys.Add(Keys.LWin);
+            hook.HookedKeys.Add(Keys.RWin);
+            hook.HookedKeys.Add(Keys.Escape);
+            hook.HookedKeys.Add(Keys.R);
+            hook.KeyDown += new System.Windows.Forms.KeyEventHandler(hook_KeyDown);
+            hook.KeyUp += new System.Windows.Forms.KeyEventHandler(hook_KeyUp);
+            hookProc = hook.hookProc;
+            hook.hook(this.hookProc);
         }
+        globalKeyboardHook.keyboardHookProc hookProc;
+        private void hook_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            bool isModifierKeysPressed = Keyboard.Modifiers == ModifierKeys.Control;
+            if (e.KeyCode == System.Windows.Forms.Keys.LWin || e.KeyCode == Keys.RWin)
+            {
+                if (Keyboard.IsKeyDown(System.Windows.Input.Key.R))
+                {
+                    System.Windows.MessageBox.Show("lol");
+                    return;
+                }
+                if (alreadyShowing) { HideWindow(); }
+                else { this.Show(); alreadyShowing = true; }
+                e.Handled = true;
+            }
+            else if (isModifierKeysPressed && e.KeyCode == System.Windows.Forms.Keys.Escape)
+            {
+                if (alreadyShowing) { HideWindow(); }
+                else { this.Show(); alreadyShowing = true; }
+                e.Handled = true;
+            }
+        }
+
+        private void hook_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            
+            bool isModifierKeysPressed = Keyboard.Modifiers == ModifierKeys.Control;
+            if (e.KeyCode == System.Windows.Forms.Keys.LWin || e.KeyCode == System.Windows.Forms.Keys.RWin)
+            {
+                if (Keyboard.IsKeyDown(System.Windows.Input.Key.R))
+                {
+                    System.Windows.MessageBox.Show("lol");
+                    return;
+                }
+                e.Handled = true;
+            }
+            else if (isModifierKeysPressed && e.KeyCode == System.Windows.Forms.Keys.Escape)
+            {
+                e.Handled = true;
+            }
+        }
+
+        globalKeyboardHook hook = new globalKeyboardHook();
         bool startPressed = false;
         private void Grid_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
@@ -289,7 +325,7 @@ namespace StartScreen
         }
         private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            
+            hook.unhook();
         }
 
         private void mainWindow_Deactivated(object sender, EventArgs e)
@@ -299,7 +335,9 @@ namespace StartScreen
         }
         public void HideWindow()
         {
-            counter2.Start();
+            alreadyShowing = false;
+            this.Hide();
+            //counter2.Start();
         }
     }
 }
